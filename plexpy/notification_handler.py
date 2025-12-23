@@ -231,6 +231,10 @@ def notify_conditions(notify_action=None, stream_data=None, timeline_data=None, 
             evaluated = not check_nofity_tag(notify_action=notify_action,
                                              tag=kwargs['plexpy_download_info']['tag_name'])
 
+    elif notify_action == 'on_tokenexpired':
+        evaluated = not check_nofity_tag(notify_action=notify_action,
+                                         tag=hashlib.sha256(plexpy.CONFIG.PMS_TOKEN.encode('utf-8')).hexdigest()[:10])
+
     # Server notifications
     else:
         evaluated = True
@@ -499,6 +503,8 @@ def set_notify_state(notifier, notify_action, subject='', body='', script_args='
             values['tag'] = parameters['update_version']
         elif notify_action == 'on_plexpyupdate':
             values['tag'] = parameters['tautulli_update_version']
+        elif notify_action == 'on_tokenexpired':
+            values['tag'] = hashlib.sha256(plexpy.CONFIG.PMS_TOKEN.encode('utf-8')).hexdigest()[:10]
 
         monitor_db.upsert(table_name='notify_log', key_dict=keys, value_dict=values)
         return monitor_db.last_insert_id()

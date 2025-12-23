@@ -3340,8 +3340,7 @@ class WebInterface(object):
     @requireAuth(member_of("admin"))
     def check_pms_token(self, **kwargs):
         plex_tv = plextv.PlexTV()
-        response = plex_tv.get_plextv_resources(return_response=True)
-        if not response.ok:
+        if not plex_tv.check_token():
             cherrypy.response.status = 401
 
     @cherrypy.expose
